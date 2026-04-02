@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuseumBot | AI-Driven Ticketing Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav id="navbar">
+        <a class="logo" href="/">Museum<span>Bot</span></a>
+        <ul class="nav-links">
+            <li><a href="#features">Capabilities</a></li>
+            <li><a href="#how">How it Works</a></li>
+            <li><a href="#outcomes">Outcomes</a></li>
+            {% if logged_in %}
+            <li class="nav-user-info">
+                <span class="user-name"><i class="fa-solid fa-circle-user"></i> {{ username }}</span>
+                <a href="/logout" class="nav-cta logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </li>
+            {% else %}
+            <li><a href="/login" class="nav-cta">Login / Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge reveal">
+                <span class="badge-dot"></span>
+                SIH 1648 · NCSM · Ministry of Culture
+            </div>
+            <h1 class="reveal">Reimagine the <em>Museum Visit</em></h1>
+            <p class="reveal">An intelligent multilingual chatbot platform that handles ticket booking, show reservations, and visitor queries — eliminating queues across all NCSM museums.</p>
+            <div class="hero-actions reveal">
+                <button class="cta-btn" onclick="openBooking()">🎫 Book Tickets Now</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- STATS -->
+    <div style="background: var(--bg-surface); padding: 50px 8%; border-top: 1px solid var(--border-gold); border-bottom: 1px solid var(--border-gold);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: center;">
+            <div class="reveal">
+                <div style="font-family: 'Playfair Display'; font-size: 3rem; color: var(--primary-gold); margin-bottom: 10px;">0</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Queue wait time</div>
+            </div>
+            <div class="reveal">
+                <div style="font-family: 'Playfair Display'; font-size: 3rem; color: var(--primary-gold); margin-bottom: 10px;">10+</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Languages supported</div>
+            </div>
+            <div class="reveal">
+                <div style="font-family: 'Playfair Display'; font-size: 3rem; color: var(--primary-gold); margin-bottom: 10px;">24/7</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Booking availability</div>
+            </div>
+            <div class="reveal">
+                <div style="font-family: 'Playfair Display'; font-size: 3rem; color: var(--primary-gold); margin-bottom: 10px;">100%</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Automated ticketing</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section id="features">
+        <span class="section-tag reveal">Core Capabilities</span>
+        <h2 class="reveal">Everything a visitor <em>needs</em></h2>
+        <div class="feature-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">🎫</div>
+                <h3>Smart Ticket Booking</h3>
+                <p>Book gate entry, exhibitions, planetarium shows, and guided tours through a single conversational interface. Instant QR code delivery.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🌐</div>
+                <h3>Multilingual Support</h3>
+                <p>Converse in Hindi, Tamil, Bengali, Telugu, Marathi, and 6 more languages. Our chatbot auto-detects your language.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">💳</div>
+                <h3>Integrated Payments</h3>
+                <p>Pay via UPI, Razorpay, debit/credit cards, or net banking. Fully PCI-DSS compliant with zero human intervention.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Helpdesk</h3>
+                <p>Beyond tickets — the bot answers exhibit queries, directions, timings, and handles complex issues seamlessly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" style="background: var(--bg-surface);">
+        <span class="section-tag reveal">Visitor Journey</span>
+        <h2 class="reveal">Book in <em>4 steps</em></h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-top: 60px;">
+            <div class="reveal">
+                <div style="width: 50px; height: 50px; border: 1px solid var(--primary-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--primary-gold); margin-bottom: 20px;">1</div>
+                <h4 style="margin-bottom: 10px; color: var(--text-primary);">Establish Contact</h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Launch the booking portal or chat with our Virtual Curator.</p>
+            </div>
+            <div class="reveal">
+                <div style="width: 50px; height: 50px; border: 1px solid var(--primary-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--primary-gold); margin-bottom: 20px;">2</div>
+                <h4 style="margin-bottom: 10px; color: var(--text-primary);">Personalize Visit</h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Choose your museum, desired date, and number of guests.</p>
+            </div>
+            <div class="reveal">
+                <div style="width: 50px; height: 50px; border: 1px solid var(--primary-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--primary-gold); margin-bottom: 20px;">3</div>
+                <h4 style="margin-bottom: 10px; color: var(--text-primary);">Secure Ledger</h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Finalize your contribution via our secure multi-method gateway.</p>
+            </div>
+            <div class="reveal">
+                <div style="width: 50px; height: 50px; border: 1px solid var(--primary-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--primary-gold); margin-bottom: 20px;">4</div>
+                <h4 style="margin-bottom: 10px; color: var(--text-primary);">Enter Gallery</h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Receive your digital QR code instantly for zero-queue entry.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- OUTCOMES -->
+    <section id="outcomes">
+        <span class="section-tag reveal">Project Goals</span>
+        <h2 class="reveal">Three <em>core outcomes</em></h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <div class="reveal" style="padding: 40px; border: 1px solid var(--border-gold); background: var(--bg-surface); border-radius: 10px;">
+                <div style="font-size: 2rem; margin-bottom: 20px;">✨</div>
+                <h3 style="color: var(--primary-gold); margin-bottom: 15px;">Enhanced Experience</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Quick, error-free booking eliminates queues and frustration.</p>
+            </div>
+            <div class="reveal" style="padding: 40px; border: 1px solid var(--border-gold); background: var(--bg-surface); border-radius: 10px;">
+                <div style="font-size: 2rem; margin-bottom: 20px;">⚙️</div>
+                <h3 style="color: var(--primary-gold); margin-bottom: 15px;">Operational Efficiency</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Automated handling reduces manual errors and staffing costs.</p>
+            </div>
+            <div class="reveal" style="padding: 40px; border: 1px solid var(--border-gold); background: var(--bg-surface); border-radius: 10px;">
+                <div style="font-size: 2rem; margin-bottom: 20px;">📊</div>
+                <h3 style="color: var(--primary-gold); margin-bottom: 15px;">Data Insights</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Real-time analytics support efficient decision-making.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHAT WIDGET -->
+    <div class="chat-widget" id="chatWidget" style="display: none;">
+        <div class="chat-header">
+            <div class="chat-title">
+                <i class="fa-solid fa-seedling"></i>
+                <div>
+                    <strong>Virtual Curator</strong>
+                    <div class="status">Online</div>
+                </div>
+            </div>
+            <button class="close-chat" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="message bot-message">
+                Greetings, <b>{{ username if logged_in else 'Guest' }}</b>. I am here to answer your queries and assist with "tickets". How may I help you?
+            </div>
+        </div>
+        <div class="chat-typing" id="chatTyping" style="display: none; padding: 0 20px;">
+            <div class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        </div>
+        <div class="quick-actions" id="quickActions">
+            <button class="quick-btn" onclick="quickAction('Book Tickets')">🎫 Book Tickets</button>
+            <button class="quick-btn" onclick="quickAction('Museum Hours')">🕒 Hours</button>
+            <button class="quick-btn" onclick="quickAction('Parking')">🚗 Parking</button>
+            <button class="quick-btn" onclick="quickAction('History')">📜 History</button>
+        </div>
+        <div class="chat-input-area">
+
+            <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- BOOKING MODAL -->
+    <div class="modal-overlay" id="bookingModal" onclick="handleOverlayClick(event)">
+        <div class="modal" id="modalBox">
+            <div class="modal-layout">
+                <!-- Main Form Area -->
+                <div class="modal-main">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-ticket gold-text"></i> Reserve Admission</h3>
+                        <button class="modal-close" onclick="closeBooking()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="prog-bar-new">
+                            <div class="prog-dot active" id="pd1" data-label="Venue"></div>
+                            <div class="prog-dot" id="pd2" data-label="Tickets"></div>
+                            <div class="prog-dot" id="pd3" data-label="Checkout"></div>
+                            <div class="prog-dot" id="pd4" data-label="Receipt"></div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 1 -->
+                    <div class="step-panel active" id="step1">
+                        <div class="form-group">
+                            <label class="form-label">Destination Museum Site</label>
+                            <div class="form-input-wrapper">
+                                <i class="fa-solid fa-building-columns form-input-icon"></i>
+                                <select class="form-select" id="museumSelect" onchange="updateSummary()">
+                                    <option value="">Select a Heritage Site…</option>
+                                    <option>National Science Centre, New Delhi</option>
+                                    <option>Nehru Science Centre, Mumbai</option>
+                                    <option>BITM Kolkata</option>
+                                    <option>Science City, Ahmedabad</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Preferred Date</label>
+                                <div class="form-input-wrapper">
+                                    <i class="fa-solid fa-calendar-alt form-input-icon"></i>
+                                    <input type="date" class="form-input" id="visitDate" onchange="updateSummary()" onclick="this.showPicker()" style="color-scheme: dark;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Lead Visitor Name</label>
+                                <div class="form-input-wrapper">
+                                    <i class="fa-solid fa-user-check form-input-icon"></i>
+                                    <input type="text" class="form-input" id="visitorName" placeholder="Full name" value="{{ username if logged_in else '' }}" oninput="updateSummary()">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer-new">
+                            <button class="cta-btn secondary" onclick="closeBooking()">Cancel Access</button>
+                            <button class="cta-btn" onclick="goStep(2)">Proceed to Selection <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div class="step-panel" id="step2">
+                        <label class="form-label">Ticket Tier</label>
+                        <div class="ticket-grid-new">
+                            <div class="ticket-card-mini selected" onclick="selectTicket(this, 100, 'Adult')">
+                                <div class="ticket-badge">Standard</div>
+                                <span class="ticket-price-val">₹100</span>
+                                <span class="ticket-tier-name">Adult Member</span>
+                            </div>
+                            <div class="ticket-card-mini" onclick="selectTicket(this, 50, 'Student')">
+                                <div class="ticket-badge">Muted</div>
+                                <span class="ticket-price-val">₹50</span>
+                                <span class="ticket-tier-name">Student / Child</span>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 30px;">
+                            <label class="form-label">Member Count</label>
+                            <div class="qty-selector-new">
+                                <button onclick="changeQty(-1)"><i class="fa-solid fa-minus"></i></button>
+                                <span id="qtyVal">02</span>
+                                <button onclick="changeQty(1)"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <div class="modal-footer-new">
+                            <button class="cta-btn secondary" onclick="goStep(1)"><i class="fa-solid fa-arrow-left"></i> Venue</button>
+                            <button class="cta-btn" onclick="goStep(3)">Checkout <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div class="step-panel" id="step3">
+                        <div class="payment-selection">
+                            <div class="pay-option selected" onclick="selectPayment('upi', this)">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                                <span>UPI Transfer</span>
+                            </div>
+                            <div class="pay-option" onclick="selectPayment('card', this)">
+                                <i class="fa-regular fa-credit-card"></i>
+                                <span>Credit / Debit</span>
+                            </div>
+                        </div>
+                        <div class="payment-visual" id="payUPI">
+                            <div class="qr-container-new">
+                                <img src="/static/my_scanner.png.jpeg" alt="My UPI Scanner" style="width:150px; height:150px; border-radius:10px; border:2px solid var(--primary-gold);">
+                                <span class="qr-scan-label">Scan with GPay / PhonePe</span>
+                                <div style="margin-top: 15px; width: 100%;">
+                                    <input type="text" id="utrInput" class="form-input" placeholder="Enter 12-digit UPI / UTR Reference No." style="width: 100%; border: 1px solid var(--border-gold); background: #1a1a2e; padding: 10px; color: white; border-radius: 5px; text-align: center;">
+                                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Required to verify successful transfer</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="payment-visual" id="payCard" style="display: none; padding: 10px;">
+                            <div class="card-form-new" style="display: flex; flex-direction: column; gap: 15px;">
+                                <input type="text" id="cardNumberInput" class="form-input" placeholder="Card Number (16 Digits)" maxlength="16" style="width: 100%; border: 1px solid var(--border-gold); background: #1a1a2e; padding: 12px; color: white; border-radius: 8px;">
+                                <div style="display: flex; gap: 15px;">
+                                    <input type="text" id="cardExpiryInput" class="form-input" placeholder="MM/YY" maxlength="5" style="width: 50%; border: 1px solid var(--border-gold); background: #1a1a2e; padding: 12px; color: white; border-radius: 8px;">
+                                    <input type="text" id="cardCvvInput" class="form-input" placeholder="CVV" maxlength="3" style="width: 50%; border: 1px solid var(--border-gold); background: #1a1a2e; padding: 12px; color: white; border-radius: 8px;">
+                                </div>
+                                <input type="text" id="cardNameInput" class="form-input" placeholder="Cardholder Name" style="width: 100%; border: 1px solid var(--border-gold); background: #1a1a2e; padding: 12px; color: white; border-radius: 8px;">
+                            </div>
+                        </div>
+                        <div class="modal-footer-new">
+                            <button class="cta-btn secondary" onclick="goStep(2)"><i class="fa-solid fa-arrow-left"></i> Selection</button>
+                            <button class="cta-btn" id="payBtn" onclick="processManualPayment()">Complete Payment <i class="fa-solid fa-check"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4 -->
+                    <div class="step-panel" id="step4">
+                        <div class="success-header">
+                            <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+                            <h3>Transaction Complete</h3>
+                            <p>Your digital admission is now active.</p>
+                        </div>
+                        <div class="e-ticket-modern">
+                            <div class="ticket-side">
+                                <div class="ticket-label">Member</div>
+                                <div class="ticket-value" id="ticketVisitorText">Visitor</div>
+                            </div>
+                            <div class="ticket-side">
+                                <div class="ticket-label">Reference</div>
+                                <div class="ticket-value gold-text" id="ticketNum">########</div>
+                            </div>
+                            <div class="ticket-divider"></div>
+                            <div class="ticket-bottom">
+                                <div id="ticketMuseumText">Museum Heritage Site</div>
+                                <div class="ticket-footer">Presented by MuseumBot SIH Team</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer-new">
+                            <button class="cta-btn secondary" style="width: 50%" onclick="closeBooking()">Close</button>
+                            <button class="cta-btn" style="width: 50%" onclick="downloadTicket()">Download E-Ticket <i class="fa-solid fa-download"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Sidebar -->
+                <div class="modal-summary">
+                    <h4>Booking Summary</h4>
+                    <div class="summary-list" id="summaryList">
+                        <div class="summary-item">
+                            <span>Museum</span>
+                            <span id="sumMuseum">--</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Date</span>
+                            <span id="sumDate">--</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Guests</span>
+                            <span id="sumQty">0</span>
+                        </div>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total Due</span>
+                        <span id="sumTotal">₹0.00</span>
+                    </div>
+                    <div class="summary-secure">
+                        <i class="fa-solid fa-shield-halved"></i> 256-bit SSL Encrypted
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOGGLE BUTTON -->
+    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+        <i class="fa-solid fa-comment-dots"></i>
+    </button>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a class="logo" href="#">Museum<span>Bot</span></a>
+                <p>Intelligent chatbot-based helpdesk for museum visitors. Built for SIH 1648 under the National Council of Science Museums.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Web Booking</a></li>
+                    <li><a href="#">Mobile App</a></li>
+                    <li><a href="#">Kiosk</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">NCSM Docs</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 MuseumBot · Smart India Hackathon</span>
+            <span>NCSM · Ministry of Culture · Govt. of India</span>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="/static/main.js"></script>
+</body>
+</html>

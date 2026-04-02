@@ -1,0 +1,11 @@
+Flask
+qrcode
+Pillow
+nltk
+gunicorn
+authlib
+Flask-Mail
+python-dotenv
+requests
+deep-translator
+langdetect

@@ -159,23 +159,27 @@ class MuseumChatbot:
             
         try:
             self.client = genai.Client(api_key=self.api_key)
-            for model_name in MODEL_PRIORITY:
-                try:
-                    # Smoke Test: Single-token generation verifies API access and model existence
-                    self.client.models.generate_content(
-                        model=model_name,
-                        contents="ping",
-                        config=types.GenerateContentConfig(max_output_tokens=1)
-                    )
-                    
-                    self.model_id = model_name
-                    print(f"SUCCESS: Verified and selected AI Model: {model_name}")
-                    return # Successfully found a model
-                except Exception as e:
-                    print(f"DEBUG: Model {model_name} failed smoke test. Error: {str(e)}")
-                    if "401" in str(e) or "API_KEY_INVALID" in str(e):
-                        print("CRITICAL: Your GEMINI_API_KEY appears to be invalid!")
-                    continue
+            for base_model_name in MODEL_PRIORITY:
+                # Try both the bare name and the "models/" prefixed name
+                for model_name in [base_model_name, f"models/{base_model_name}"]:
+                    try:
+                        print(f"DEBUG: Attempting smoke test for {model_name}...")
+                        # Smoke Test: Single-token generation verifies API access and model existence
+                        self.client.models.generate_content(
+                            model=model_name,
+                            contents="ping",
+                            config=types.GenerateContentConfig(max_output_tokens=1)
+                        )
+                        
+                        self.model_id = model_name
+                        print(f"SUCCESS: Verified and selected AI Model: {model_name}")
+                        return # Successfully found a model
+                    except Exception as e:
+                        print(f"DEBUG: Model {model_name} failed smoke test. Error: {str(e)}")
+                        if "401" in str(e) or "API_KEY_INVALID" in str(e):
+                            print("CRITICAL: Your GEMINI_API_KEY appears to be invalid!")
+                            break # No point trying other variations of this model
+                        continue
             
             print("ERROR: All prioritized AI models failed verification. System using fallback mode.")
             self.client = None # Reset if no models worked

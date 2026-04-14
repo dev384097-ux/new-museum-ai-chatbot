@@ -16,10 +16,14 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app = Flask(__name__)
 # Enable ProxyFix to handle HTTPS redirects correctly behind Render's proxy
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
-app.secret_key = os.getenv('SECRET_KEY')
-if not app.secret_key:
-    # Fallback only for development, otherwise will cause issues
-    app.secret_key = 'development_only_key_please_set_in_env'
+app.secret_key = os.getenv('SECRET_KEY', 'development_only_key_please_set_in_env')
+
+# Detect if we are on Render for protocol enforcement
+IS_RENDER = 'RENDER' in os.environ
+
+if IS_RENDER:
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 # OAuth Configuration
 oauth = OAuth(app)
@@ -115,7 +119,9 @@ def login_google():
         }
         return google_mock_callback(mock_user)
         
-    redirect_uri = url_for('google_callback', _external=True).strip()
+    # Force HTTPS on Render to prevent "loading/hang" mismatch errors
+    scheme = 'https' if IS_RENDER else 'http'
+    redirect_uri = url_for('google_callback', _external=True, _scheme=scheme).strip()
     return google.authorize_redirect(redirect_uri)
 
 def google_mock_callback(user_info):
@@ -156,42 +162,58 @@ def google_mock_callback(user_info):
 
 @app.route('/auth/callback')
 def google_callback():
-    token = google.authorize_access_token()
-    user_info = token.get('userinfo')
-    
-    if not user_info:
-        flash("Failed to retrieve user information from Google.")
-        return redirect(url_for('login'))
-        
-    email = user_info['email']
-    name = user_info.get('name', email.split('@')[0])
-    
-    # Generate OTP
-    otp = str(random.randint(100000, 999999))
-    
-    conn = get_db_connection()
-    user = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
-    
-    if user:
-        conn.execute('UPDATE users SET otp = ?, full_name = ? WHERE email = ?', (otp, name, email))
-    else:
-        conn.execute('INSERT INTO users (username, email, full_name, otp, is_verified) VALUES (?, ?, ?, ?, 0)',
-                     (email, email, name, otp))
-    
-    conn.commit()
-    conn.close()
-    
-    # Send OTP Email
     try:
-        msg = Message("Your MuseumBot Verification Code", recipients=[email])
-        msg.body = f"Hello {name},\n\nYour One-Time Password (OTP) for MuseumBot is: {otp}\n\nPlease enter this on the verification page to complete your login."
-        mail.send(msg)
-        session['temp_email'] = email
-        session['temp_name'] = name
-        return redirect(url_for('verify_otp'))
+        # 1. Authorize Token
+        print("DEBUG: Initiating Google authorize_access_token...")
+        scheme = 'https' if IS_RENDER else 'http'
+        redirect_uri = url_for('google_callback', _external=True, _scheme=scheme).strip()
+        token = google.authorize_access_token(redirect_uri=redirect_uri)
+        
+        user_info = token.get('userinfo')
+        if not user_info:
+            user_info = google.get('https://www.googleapis.com/oauth2/v3/userinfo').json()
+            
+        if not user_info:
+            print("ERROR: Failed to retrieve user info from Google")
+            flash("Failed to retrieve user information from Google.")
+            return redirect(url_for('login'))
+            
+        email = user_info['email'].strip()
+        name = user_info.get('name', email.split('@')[0])
+        print(f"DEBUG: Successfully fetched user: {email}")
+        
+        # 2. Database Sync
+        otp = str(random.randint(100000, 999999))
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
+        
+        if user:
+            conn.execute('UPDATE users SET otp = ?, full_name = ? WHERE email = ?', (otp, name, email))
+        else:
+            conn.execute('INSERT INTO users (username, email, full_name, otp, is_verified) VALUES (?, ?, ?, ?, 0)',
+                         (email, email, name, otp))
+        
+        conn.commit()
+        conn.close()
+        
+        # 3. Send OTP Email with Timeout protection
+        print(f"DEBUG: Attempting to send OTP email to {email}...")
+        try:
+            msg = Message("Your MuseumBot Verification Code", recipients=[email])
+            msg.body = f"Hello {name},\n\nYour One-Time Password (OTP) for MuseumBot is: {otp}\n\nPlease enter this on the verification page to complete your login."
+            mail.send(msg)
+            print("DEBUG: Email sent successfully!")
+            session['temp_email'] = email
+            session['temp_name'] = name
+            return redirect(url_for('verify_otp'))
+        except Exception as e:
+            print(f"CRITICAL SMTP ERROR: {str(e)}")
+            flash(f"Error sending verification email: {str(e)}. Check your Gmail App Password settings.")
+            return redirect(url_for('login'))
+            
     except Exception as e:
-        print(f"SMTP ERROR: {e}")
-        flash(f"Error sending verification email: {str(e)}")
+        print(f"CRITICAL OAUTH CALLBACK ERROR: {str(e)}")
+        flash(f"Google Login failed: {str(e)}", "danger")
         return redirect(url_for('login'))
 
 @app.route('/verify-otp', methods=['GET', 'POST'])

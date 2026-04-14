@@ -49,6 +49,11 @@ if not os.path.exists(os.path.join(os.path.dirname(__file__), 'data', 'museum.db
 
 chatbot = MuseumChatbot()
 
+@app.route('/debug-oauth')
+def debug_oauth():
+    uri = url_for('google_callback', _external=True)
+    return f"DEBUG: The app is sending this Redirect URI to Google: <b>{uri}</b><br><br>Please make sure this exact text (including http/https and port) is in your Google Cloud Console."
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

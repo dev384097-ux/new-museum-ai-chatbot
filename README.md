@@ -91,5 +91,20 @@ To get the most out of this chatbot, you'll need an AI API key. Here are the bes
     - **How to Get**: Sign up at [OpenRouter.ai](https://openrouter.ai/).
     - **Pros**: Some models are permanently free, and it provides a unified API.
 
+## 🛠️ Diagnostics & Maintenance
+
+If you run into issues on Render or Localhost, use these built-in tools:
+
+1.  **OAuth Debugger**: Visit `/debug-url` on your site to see the exact Redirect URI Google expects.
+2.  **AI Model Checker**: Run `python check_models.py` in your terminal to verify your Gemini API key and see which models are available.
+3.  **OTP Fail-Safe**: If the email service fails for any reason, the OTP code is automatically logged to the **Render Dashboard Logs** for manual retrieval.
+
+## 🚀 Production Configuration (Render)
+
+The app is optimized for Render with the following settings:
+- **Port 587 (TLS)**: Standard SMTP port for reliable email delivery.
+- **ProxyFix**: Middleware to handle HTTPS headers correctly behind Render's proxy.
+- **Quota Resilience**: Startup cooldowns and fallback models to ensure the chatbot stays online during API rate limits.
+
 ---
 *Created for the Museum AI Capstone Project.*

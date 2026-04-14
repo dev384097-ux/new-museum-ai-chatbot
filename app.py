@@ -25,8 +25,8 @@ if not app.secret_key:
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id=os.getenv('GOOGLE_CLIENT_ID'),
-    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+    client_id=os.getenv('GOOGLE_CLIENT_ID', '').strip(),
+    client_secret=os.getenv('GOOGLE_CLIENT_SECRET', '').strip(),
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={'scope': 'openid email profile'}
 )
@@ -51,8 +51,8 @@ chatbot = MuseumChatbot()
 
 @app.route('/debug-oauth')
 def debug_oauth():
-    uri = url_for('google_callback', _external=True)
-    return f"DEBUG: The app is sending this Redirect URI to Google: <b>{uri}</b><br><br>Please make sure this exact text (including http/https and port) is in your Google Cloud Console."
+    uri = url_for('google_callback', _external=True).strip()
+    return f"DEBUG: The app is sending this Redirect URI to Google: <b>'{uri}'</b> (Spaces removed)"
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -120,7 +120,7 @@ def login_google():
         }
         return google_mock_callback(mock_user)
         
-    redirect_uri = url_for('google_callback', _external=True)
+    redirect_uri = url_for('google_callback', _external=True).strip()
     return google.authorize_redirect(redirect_uri)
 
 def google_mock_callback(user_info):

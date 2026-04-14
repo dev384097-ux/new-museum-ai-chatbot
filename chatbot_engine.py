@@ -126,7 +126,7 @@ class MuseumChatbot:
                 'pa_latin': "Security sadi priority hai, 24/7 CCTV surveillance hai."
             },
             'unknown': {
-                'en': "I'm currently experiencing high traffic. Please try again in a moment.",
+                'en': "I'm not sure about that. Try asking about 'exhibitions', 'hours', or 'tickets'!",
                 'hi_native': "क्षमा करें, मुझे समझ नहीं आया। क्या आप 'टिकट' या 'समय' के बारे में पूछ सकते हैं?",
                 'hi_latin': "Thoda clear karenge? Aap mujhse 'tickets' ya 'timings' ke bare mein puch sakte hain.",
                 'ta_native': "என்னிடம் டிக்கெட்டுகள் அல்லது நேரங்களைப் பற்றி கேளுங்கள்!",
@@ -513,6 +513,10 @@ MULTILINGUAL SUPPORT & SESSION LOCK:
             return self._get_localized_response('cafe', user_lang, final_script_data), state_data
         if 'secur' in msg_lower or 'safe' in msg_lower:
             return self._get_localized_response('security', user_lang, final_script_data), state_data
+        
+        # Museum Info / About
+        if 'museum' in msg_lower or 'best' in msg_lower or 'about' in msg_lower or 'explore' in msg_lower:
+            return "This Museum is one of India's finest, showcasing our rich heritage and art. We have amazing exhibitions and a great cafe! Try asking 'what exhibitions do you have?'", state_data
         
         return self._get_localized_response('unknown', user_lang, final_script_data), state_data
 
